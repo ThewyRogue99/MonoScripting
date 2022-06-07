@@ -3,9 +3,8 @@
 #include <cstdio>
 #include <cstdarg>
 
-class Console
+namespace Console
 {
-public:
 	template<typename ...Args>
 	void Print(const char* fmt, Args ...args)
 	{

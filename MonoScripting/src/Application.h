@@ -5,11 +5,11 @@
 class Application
 {
 public:
-	Application() : console(new Console()) { }
-
 	void Run();
 
+	void Shutdown();
+
 private:
-	Console* console;
+	bool bIsRunning = true;
 };
 
