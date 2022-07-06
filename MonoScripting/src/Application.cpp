@@ -2,40 +2,34 @@
 
 #include "Input.h"
 
+#include <mono/jit/jit.h>
+#include <mono/metadata/assembly.h>
+#include <mono/metadata/debug-helpers.h>
+
+#include "Script/ScriptCore.h"
+
 #define STR_CONCAT(A, B) A##B
 #define SOLUTION_REL_PATH(PATH) STR_CONCAT(_SOLUTIONDIR, PATH)
 
 Application::Application(const std::string& Name) : AppName(Name)
 {
-	mono_set_dirs(
-		SOLUTION_REL_PATH("MonoScripting\\vendor\\Mono\\lib"),
-		SOLUTION_REL_PATH("MonoScripting\\vendor\\Mono\\lib")
-	);
+	SCore = ScriptCore(Name.c_str());
 
-	m_ptrMonoDomain = mono_jit_init(AppName.c_str());
+	SCore.AddScripts({
+		"ConsoleScript"
+	});
+}
 
-	if (m_ptrMonoDomain)
-	{
-		int i = 0;
-		return;
-	}
+Application::~Application()
+{
+	SCore.Deinit();
 }
 
 void Application::Run()
 {
-	bool bIsKeyReleased = true;
-
 	while (bIsRunning)
 	{
-		if (Input::IsKeyDown(VK_TAB))
-		{
-			if (bIsKeyReleased)
-				Console::Print("Hello %s\n", "World");
-
-			bIsKeyReleased = false;
-		}
-		else
-			bIsKeyReleased = true;
+		SCore.Update();
 
 		if (Input::IsKeyDown(VK_ESCAPE))
 			Shutdown();

@@ -24,6 +24,12 @@
     <ClInclude Include="src\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Script\ScriptCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Script\ScriptField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -33,6 +39,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Script\ScriptCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Script\ScriptField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
