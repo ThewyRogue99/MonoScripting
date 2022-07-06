@@ -12,13 +12,13 @@ ScriptField::ScriptField(MonoObject* object, MonoClassField* field) : FieldObjec
 }
 
 template<typename T>
-T ScriptField::as()
+T ScriptField::As()
 {
 	assert(false && "Tried to get field in wrong type");
 }
 
 template<>
-int ScriptField::as<int>()
+int ScriptField::As<int>()
 {
 	bool condition = (FieldType == "int");
 	assert(condition && "Tried to get field in wrong type");
@@ -35,7 +35,7 @@ int ScriptField::as<int>()
 }
 
 template<>
-std::wstring ScriptField::as<std::wstring>()
+std::wstring ScriptField::As<std::wstring>()
 {
 	bool condition = (FieldType == "string" || FieldType == "String");
 	assert(condition && "Tried to get field in wrong type");

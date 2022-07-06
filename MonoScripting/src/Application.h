@@ -2,7 +2,7 @@
 
 #include <string>
 
-class ScriptCore;
+#include "Script/ScriptCore.h"
 
 class Application
 {

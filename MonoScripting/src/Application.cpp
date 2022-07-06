@@ -2,19 +2,11 @@
 
 #include "Input.h"
 
-#include <mono/jit/jit.h>
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/debug-helpers.h>
-
-#include "Script/ScriptCore.h"
-
 #define STR_CONCAT(A, B) A##B
 #define SOLUTION_REL_PATH(PATH) STR_CONCAT(_SOLUTIONDIR, PATH)
 
 Application::Application(const std::string& Name) : AppName(Name)
 {
-	SCore = ScriptCore(Name.c_str());
-
 	SCore.AddScripts({
 		"ConsoleScript"
 	});
@@ -22,7 +14,7 @@ Application::Application(const std::string& Name) : AppName(Name)
 
 Application::~Application()
 {
-	SCore.Deinit();
+
 }
 
 void Application::Run()

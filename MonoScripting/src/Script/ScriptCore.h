@@ -46,6 +46,8 @@ private:
 		std::vector<ScriptField> Fields = { };
 	};
 
+	bool bIsInit = false;
+
 	std::vector<ScriptObject> ScriptObjects = { };
 
 	MonoDomain* m_ptrMonoDomain = nullptr;

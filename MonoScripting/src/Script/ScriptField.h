@@ -8,7 +8,7 @@ class ScriptField
 {
 public:
 	template<typename T>
-	T as();
+	T As();
 
 	template<typename T>
 	void SetAs(const T& value);

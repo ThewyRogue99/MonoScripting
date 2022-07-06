@@ -22,41 +22,67 @@ ScriptCore::~ScriptCore()
 
 bool ScriptCore::Init(const char* AppName)
 {
-	mono_set_dirs(
-		SOLUTION_REL_PATH("MonoScripting\\vendor\\Mono\\lib"),
-		SOLUTION_REL_PATH("MonoScripting\\vendor\\Mono\\lib")
-	);
-
-	m_ptrMonoDomain = mono_jit_init(AppName);
-
-	if (m_ptrMonoDomain)
+	if (!bIsInit)
 	{
-		m_ptrGameAssembly = mono_domain_assembly_open(m_ptrMonoDomain, SOLUTION_REL_PATH("x64\\Debug\\ScriptLib.dll"));
+		mono_set_dirs(
+			SOLUTION_REL_PATH("MonoScripting\\vendor\\Mono\\lib"),
+			SOLUTION_REL_PATH("MonoScripting\\vendor\\Mono\\lib")
+		);
 
-		if (m_ptrGameAssembly)
+		m_ptrMonoDomain = mono_jit_init(AppName);
+
+		if (m_ptrMonoDomain)
 		{
-			m_ptrGameAssemblyImage = mono_assembly_get_image(m_ptrGameAssembly);
+			m_ptrGameAssembly = mono_domain_assembly_open(m_ptrMonoDomain, SOLUTION_REL_PATH("x64\\Debug\\ScriptLib.dll"));
 
-			if (m_ptrGameAssemblyImage)
+			if (m_ptrGameAssembly)
 			{
-				m_ptrBeginMethodDesc = mono_method_desc_new(".IScript:OnBegin()", false);
-				m_ptrUpdateMethodDesc = mono_method_desc_new(".IScript:OnUpdate()", false);
+				m_ptrGameAssemblyImage = mono_assembly_get_image(m_ptrGameAssembly);
 
-				if (m_ptrBeginMethodDesc && m_ptrUpdateMethodDesc)
+				if (m_ptrGameAssemblyImage)
 				{
-					SetLibs();
+					m_ptrBeginMethodDesc = mono_method_desc_new(".IScript:OnBegin()", false);
+					m_ptrUpdateMethodDesc = mono_method_desc_new(".IScript:OnUpdate()", false);
 
-					return true;
+					if (m_ptrBeginMethodDesc && m_ptrUpdateMethodDesc)
+					{
+						SetLibs();
+
+						bIsInit = true;
+
+						return true;
+					}
+
+					if (m_ptrBeginMethodDesc)
+					{
+						mono_method_desc_free(m_ptrBeginMethodDesc);
+						m_ptrBeginMethodDesc = nullptr;
+					}
+					if (m_ptrUpdateMethodDesc)
+					{
+						mono_method_desc_free(m_ptrUpdateMethodDesc);
+						m_ptrUpdateMethodDesc = nullptr;
+					}
 				}
+
+				m_ptrGameAssemblyImage = nullptr;
 			}
+
+			m_ptrGameAssembly = nullptr;
 		}
+
+		m_ptrMonoDomain = nullptr;
 	}
+	else
+		return true;
 
 	return false;
 }
 
 void ScriptCore::Deinit()
 {
+	if (!bIsInit) return;
+
 	for (auto& script : ScriptObjects)
 	{
 		mono_gchandle_free(script.GCHandle);
@@ -70,10 +96,19 @@ void ScriptCore::Deinit()
 
 	if (m_ptrMonoDomain)
 		mono_jit_cleanup(m_ptrMonoDomain);
+
+	m_ptrMonoDomain = nullptr;
+	m_ptrGameAssembly = nullptr;
+	m_ptrGameAssemblyImage = nullptr;
+
+	m_ptrBeginMethodDesc = nullptr;
+	m_ptrUpdateMethodDesc = nullptr;
 }
 
 bool ScriptCore::AddScript(const char* Name)
 {
+	if (!bIsInit) return false;
+
 	ScriptObject script = ScriptObject();
 
 	MonoClass* ptrScriptClass = mono_class_from_name(m_ptrGameAssemblyImage, "ScriptLib", Name);
@@ -165,6 +200,8 @@ bool ScriptCore::AddScript(const char* Name)
 
 bool ScriptCore::AddScripts(std::vector<const char*> Names)
 {
+	if (!bIsInit) return false;
+
 	bool bState = true;
 
 	for (auto name : Names)
@@ -178,6 +215,8 @@ bool ScriptCore::AddScripts(std::vector<const char*> Names)
 
 void ScriptCore::Update()
 {
+	if (!bIsInit) return;
+
 	for (auto& script : ScriptObjects)
 	{
 		MonoObject* ptrUpdateExObject = nullptr;
@@ -195,6 +234,8 @@ void ScriptCore::Update()
 
 void ScriptCore::SetLibs()
 {
+	if (!bIsInit) return;
+
 	SetConsoleLib();
 }
 
